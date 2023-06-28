@@ -1,88 +1,57 @@
-let cabecalho = document.getElementById('cabecalho');
-let mostradorJogador = document.getElementById('jogador');
-let jogadorAtual = 'X';
-let casas = document.getElementsByTagName('td');
-let reinicar = document.getElementById('reiniciar')
-reinicar.style.display = 'none'
-let contVelha;
-// Grid de casas
-// 0 1 2
-// 3 4 5
-// 6 7 8
+const mario = document.querySelector('.mario');
+const pipe = document.querySelector('.pipe');
+let contadorPulos = 0; 
+//let contadorAtivo = true;
+const contadorElemento = document.getElementById('contador');
 
-mostradorJogador.innerHTML = jogadorAtual;
+const jump = () => {
+    mario.classList.add('jump');
+    var audio = new Audio('efect/audioj.mp3');
+    audio.addEventListener('canplaythrough', function() {
+    audio.play();
+    });
+    setTimeout(() => {
+        mario.classList.remove('jump');
+    }, 500);
 
-// Liga todas as células na função jogar
-for (const casa of casas) {
-  casa.onclick = jogar;
-}
-function jogar() {  
-  // TODO: verificar se o quadro já não está preenchido!
-    if(this.textContent != '')
-        return;
-  // Coloca o conteúdo na célula atual
-  this.textContent = jogadorAtual;
-  trocaTurno();
-  trocaJogador();
-  mostradorJogador.innerHTML = jogadorAtual;
-}
-//Troca jogador
-function trocaJogador() {
-  if (jogadorAtual === 'X') {
-    jogadorAtual = 'O';
-  } else {
-    jogadorAtual = 'X';
-  }
-}
-//Verifica o fim / troca turno
-function trocaTurno() {
+    contadorPulos++; 
+    contadorElemento.textContent = contadorPulos; 
 
-  let ganhou = verificaFim();
-  if (ganhou) {
-    cabecalho.innerHTML = `${jogadorAtual} ganhou!`;
-    bloqueiaCelulas();
-  } else
-      verificaVelha()
+    console.log('Contagem de pulos:', contadorPulos);
 }
-//Verifica ganhador
-function verificaFim() {
-    let posGanha = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(i of posGanha) {
-        if(casas[i[0]].innerHTML == casas[i[1]].innerHTML && casas[i[1]].innerHTML == casas[i[2]].innerHTML && casas[i[1]].innerHTML !== '')
-            return true;
+
+const loop = setInterval(() => {
+    
+    const pipePosition = pipe.offsetLeft;
+    const marioPosition = window.getComputedStyle(mario).bottom.replace('px', '');
+
+    if(pipePosition <= 120 && marioPosition > 0 && marioPosition < 80){
+       // let contadorAtivo = false;
+       var audio = new Audio('efect/audioq.mp3');
+              audio.addEventListener('canplaythrough', function() {
+              audio.play();
+        });
+        pipe.style.animation = 'none';
+        pipe.style.left = `${pipePosition}px`;
+
+        pipe.style.animation = 'none';
+        pipe.style.bottom = `${marioPosition}px`;
+
+        mario.src="assets/game-over.png"
+        mario.style.width = '75px'
+        mario.style.marginLeft = '50px'
+        clearInterval(loop);
+        alert(perdeuuu);
     }
-    return false;
-}
-function bloqueiaCelulas() {
-  if(verificaFim()) {
-      for(i of casas) {
-        i.onclick = false
-      }
-      reinicar.style.display = 'block'
-  }
-}
-//verificação velha
-function verificaVelha() {
-  contVelha = 0;
-  for(i of casas) {
-    if(i.textContent != ''){
-      contVelha++
-    }
-  }
-  if(contVelha == 9) {
-    alert("Deu velha")
-    reinicar.style.display = 'block'
-    var img = document.createElement("IMG");
-  }
-}
-//reinicia jogo
-function refresh() {
-  for(i of casas) {
-    i.textContent = ''
-    i.onclick = jogar
-    jogadorAtual="X"
-    cabecalho.innerHTML = `Jogando:${jogadorAtual}`;
 
-}
-  reinicar.style.display = 'none'
-}
+}, 10);
+
+const restartButton = document.getElementById('restartButton');
+
+const restartPage = () => {
+  location.reload();
+};
+
+restartButton.addEventListener('click', restartPage);
+
+document.addEventListener('keydown', jump);
